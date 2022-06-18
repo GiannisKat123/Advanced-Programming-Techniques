@@ -2,6 +2,8 @@ import matplotlib.pyplot as plt
 from numpy import size
 import pandas as pd 
 import os
+from os import X_OK, listdir
+from os.path import isfile, join
 
 def returns_stats(file_path): 
 
@@ -17,11 +19,17 @@ def returns_stats(file_path):
     return sums, max, min, avg
     
 def energy_per_day(date): 
-
     real_path = os.path.realpath(__file__)
     dir_path = os.path.dirname(real_path)
 
     dir_path = dir_path[0:-4] + "processed_sources\\"
+
+    files = [f for f in listdir(dir_path) if isfile(join(dir_path, f))]
+
+    if "new_" + date + ".csv" in files:
+        filein="YES"
+    else:
+        filein="NO"
 
     file_path = dir_path + "new_" + date + ".csv"
 
@@ -31,7 +39,7 @@ def energy_per_day(date):
     dir_path1 = dir_path1[0:-4] + "processed_demands\\"
     file_path1 = dir_path1 + "new_" + date + ".csv"
 
-    if ((os.stat(file_path).st_size == 0) == False) and ((os.stat(file_path1).st_size == 0) == False): 
+    if filein=="YES" and ((os.stat(file_path).st_size == 0) == False) and ((os.stat(file_path1).st_size == 0) == False): 
         os.chdir(dir_path)
         file = pd.read_csv(file_path)
 
@@ -103,3 +111,6 @@ def energy_per_day(date):
         mng.window.state('zoomed')
         
         plt.show()
+        return "GOOD"
+    else:
+        return None
