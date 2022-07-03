@@ -1,116 +1,82 @@
 import matplotlib.pyplot as plt
 from numpy import size
-import pandas as pd 
+import pandas as pd
+from dfPart import * 
+from day_data import *
 import os
 from os import X_OK, listdir
 from os.path import isfile, join
 
-def returns_stats(file_path): 
+directory=os.getcwd()
 
-    file = pd.read_csv(file_path)
-    del file['Time']
-    sums = file.sum(axis = 1)
-    max = sums.max()
-    max_idx = sums.idxmax()
-    min = sums.min()
-    min_idx = sums.idxmin()
-    avg = sums.mean()
+def make_day_dataframe(year, month, day): 
 
-    return sums, max, min, avg
+    file = return_day(year, month, day) #file is part of dataframe regarding specified date
     
-def energy_per_day(date): 
-    real_path = os.path.realpath(__file__)
-    dir_path = os.path.dirname(real_path)
+    #cols = ['Solar','Wind','Geothermal','Biomass','Biogas','Small hydro','Coal','Nuclear','Natural gas','Large hydro','Batteries','Imports','Other']
 
-    dir_path = dir_path[0:-4] + "processed_sources\\"
+    #file['Sums'] = file[cols].fillna(0).sum(axis = 1) #total energy used per day (all resources)
 
+    return file
+
+def energy_per_day(year, month, day): 
+    '''Creates graph of energy used during specified date'''
+    files=[]
+    dir_path = "{}/processed_sources".format(directory)
+    print(dir_path)
+    os.chdir(dir_path)
     files = [f for f in listdir(dir_path) if isfile(join(dir_path, f))]
-
-    if "new_" + date + ".csv" in files:
-        filein="YES"
+    month1=month
+    day1=day
+    if month1<10:
+        month1 = "0"+str(month1)
+    if day1<10:
+        day1="0"+str(day1)
+    month_new = str(month1)
+    day_new = str(day1)
+    filename = "new_"+str(year)+month_new+day_new+".csv"
+    print(filename)
+    if filename not in files:
+        print("No data provided for this date")
+    
     else:
-        filein="NO"
-
-    file_path = dir_path + "new_" + date + ".csv"
-
-    real_path = os.path.realpath(__file__)
-    dir_path1 = os.path.dirname(real_path)
-
-    dir_path1 = dir_path1[0:-4] + "processed_demands\\"
-    file_path1 = dir_path1 + "new_" + date + ".csv"
-
-    if filein=="YES" and ((os.stat(file_path).st_size == 0) == False) and ((os.stat(file_path1).st_size == 0) == False): 
-        os.chdir(dir_path)
-        file = pd.read_csv(file_path)
-
-        time = file['Time']
-        
-        del file['Time']
-
-        sums, max, min, avg = returns_stats(file_path)
-
+        print("YESSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS")
+        os.chdir(directory)
+        #cols = ['Solar','Wind','Geothermal','Biomass','Biogas','Small hydro','Coal','Nuclear','Natural gas','Large hydro','Batteries','Imports','Other']
+        #file = make_day_dataframe(cols, year, month, day)
+        file = return_day(year, month, day)
         x = []
 
-        for i in range(size(time)): 
-            x.append(i)
+        time = file['Time'] #time will be used as x-axis 
 
+        sums = file['Sums']
+        max = sums.max() #max energy measured (all resources)
+        min = sums.min() #minimum energy measured (all resources)
+        avg = sums.mean() #average energy consumed throughout day (all resources)
+
+        #creates figure and plot
         fig = plt.figure("Energy by day consumption")
         ax = fig.add_subplot()
-
-        plt.xticks(x, time)
-
-        ax.set_title("Total energy consumed throughout day, " + date[-2:] + "-" + date[-4:-2] + "-" + date[0:4])
+        ax.set_title("Total energy consumed throughout day, " + str(day) + "-" + str(month) + "-" + str(year))
         ax.set_xlabel("Time of day")
         ax.set_ylabel("Total energy")
-        text = "Maximum energy consumed is: " + str(max) + "\nMinimum energy consumed is: " + str(min) + "\nAverage consumption is: " + str(round(avg, 2))
+        text = "Maximum energy consumed is: " + str(max) + "\nMinimum energy consumed is: " + str(min) + "\nAverage consumption is: " + str(round(avg, 2)) #left-bottom corner text 
         fig.text(0, 0, text, bbox = dict(boxstyle="square,pad=0.3", fc="pink", ec="gray", lw=1))
 
-        ax.scatter(x, sums, c = 'skyblue')
-
-        for i, tick in enumerate(ax.get_xticklabels()): 
-            if (i % 12 != 0): 
-                tick.set_visible(False)
-
-        mng = plt.get_current_fig_manager()
-        mng.window.state('zoomed')
-
-
-
-        os.chdir(dir_path1)
-        file = pd.read_csv(file_path1)
-
-        time = file['Time']
-        
-        del file['Time']
-
-        sums, max, min, avg = returns_stats(file_path1)
-
-        x = []
-
         for i in range(size(time)): 
-            x.append(i)
+            x.append(i) #makes an array of length equal to the amount of timestamps
 
-        fig1 = plt.figure("Energy by day Demand")
-        ax = fig1.add_subplot()
+        plt.xticks(x, time) #matches each tick on graph to each timestamp 
 
-        plt.xticks(x, time)
+        ax.plot(x, sums, c = 'skyblue', marker='o') #creates plot of points each one equal to a sum of energy at particular timestamp 
 
-        ax.set_title("Total energy demanded throughout day, " + date[-2:] + "-" + date[-4:-2] + "-" + date[0:4])
-        ax.set_xlabel("Time of day")
-        ax.set_ylabel("Total energy")
-        text = "Maximum energy demanded is: " + str(max) + "\nMinimum energy demanded is: " + str(min) + "\nAverage demand of energy is: " + str(round(avg, 2))
-        fig1.text(0, 0, text, bbox = dict(boxstyle="square,pad=0.3", fc="pink", ec="gray", lw=1))
-
-        ax.scatter(x, sums, c = 'skyblue')
-
-        for i, tick in enumerate(ax.get_xticklabels()): 
+        for i, tick in enumerate(ax.get_xticklabels()): #only shows timestamps per one hour
             if (i % 12 != 0): 
                 tick.set_visible(False)
 
-        mng = plt.get_current_fig_manager()
-        mng.window.state('zoomed')
-        
+        mng = plt.get_current_fig_manager() #makes figure full screen
+        #mng.window.state('zoomed')
+
         plt.show()
-        return "GOOD"
-    else:
-        return None
+    
+    

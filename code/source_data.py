@@ -4,12 +4,13 @@ import pandas as pd
 import os
 import numpy as np
 
+
+directory=os.getcwd()
+
 def returns_stats(array): 
 
     max = array.max()
-    max_idx = array.idxmax()
     min = array.min()
-    min_idx = array.idxmin()
     avg = array.mean()
 
     return max, min, avg
@@ -20,6 +21,7 @@ def source_per_day(source_index):
     options = ["Solar", "Wind", "Geothermal", "Biomass", "Biogas", "Small hydro", "Coal", "Nuclear", "Natural gas", "Large hydro", "Batteries", "Imports", "Other"]
     real_path = os.path.realpath(__file__)
     dir_path = os.path.dirname(real_path)
+    print(dir_path)
     dir_path = dir_path[0:-4] + "processed_sources\\"
     os.chdir(dir_path)
     Source_Data = []
@@ -54,7 +56,7 @@ def source_per_day(source_index):
     text = "Maximum energy consumed is: {:.2f}".format(max) + "\nMinimum energy consumed is: {:.2f}".format(min) + "\nAverage consumption is: {:.2f}".format(round(avg, 2))
     fig.text(0, 0, text, bbox = dict(boxstyle="square,pad=0.3", fc="pink", ec="gray", lw=1))
 
-    ax.scatter(x, Source_Data, c = 'skyblue')
+    ax.scatter(x, Source_Data, c = 'skyblue', marker='o')
 
     for i, tick in enumerate(ax.get_xticklabels()): 
         if i not in visible: 
@@ -63,5 +65,4 @@ def source_per_day(source_index):
     mng = plt.get_current_fig_manager()
     mng.window.state('zoomed')
     plt.show()
-
 

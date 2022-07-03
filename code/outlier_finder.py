@@ -2,23 +2,11 @@ import pandas as pd
 from os import X_OK, listdir
 from os.path import isfile, join
 import os
-import random
-import matplotlib.pyplot as plt
-from sklearn.cluster import KMeans
 from sklearn.cluster import DBSCAN
 import numpy as np
 from sklearn.datasets import make_friedman1
-from sklearn.preprocessing import MinMaxScaler
 from sklearn.preprocessing import StandardScaler
-from sklearn.preprocessing import RobustScaler
-from sklearn.metrics import silhouette_score
 from collections import Counter
-from sklearn.decomposition import PCA
-from sklearn.neighbors import NearestNeighbors
-from sklearn.cluster import AgglomerativeClustering
-from sklearn.cluster import MiniBatchKMeans
-from sklearn.cluster import SpectralClustering
-from sklearn.cluster import Birch
 from math import sqrt
 import plotly.express as px
 
@@ -54,7 +42,6 @@ def find_outliers(array):
     k=array[0]
     l=array[1]
     for i in range(len(files)):
-        print(files[i])
         sources_of_day=[]
         demands_of_day=[]
         mypath="{}/processed_sources".format(directory)
@@ -128,7 +115,6 @@ def find_outliers(array):
         L3.append([date,L2[i][0],L2[i][1]])
 
 
-
     X =  pd.DataFrame(L2,columns=["Sources","Demands"])
     X1 = pd.DataFrame(L3,columns=["Date","Sources","Demands"])
 
@@ -147,16 +133,7 @@ def find_outliers(array):
     ##Ένας αποδοτικός αλγόριθμος για την έυρεση των outliers είναι ο DBSCAN. Βάζοντας κατάλληλες παραμέτρους min_samples και eps, μπορούμε να βρούμε
     ##τις ημέρες εκείνες που η ζήτηση ή η παραγωγή δεν είχαν αναμενόμενες τιμές.
     try:
-        
         minsamples=int(num)
-    # neighbors=NearestNeighbors(n_neighbors=2)
-    # neighbors_fit=neighbors.fit(X)
-    # distances,indices=neighbors_fit.kneighbors(X)
-    # distances=np.sort(distances,axis=0)
-    # distances=distances[:,1]
-    # plt.plot(distances)
-    # plt.show()
-
         
         distance=float(distance)
 
@@ -197,11 +174,11 @@ def find_outliers(array):
         title="Sources vs Demands for hours betweeen {}:00-{}:00".format(start_time,end_time)
         )
         fig.show()
+        return "GOOD"
     except ValueError:
         print("Wrong Input")
     except KeyboardInterrupt:
         print("Process interrupted")
-    
 
 
 

@@ -2,6 +2,7 @@ import unittest
 
 from functions import *
 from day_data import *
+from outlier_finder import *
 
 class TestGetTime(unittest.TestCase):
     def runTest(self):
@@ -28,10 +29,10 @@ class TestGetDate(unittest.TestCase):
         self.assertEqual(checkDate("2022:04:20"),None,"Wrong Input")
         self.assertEqual(checkDate("2022-12-31"),"2022-12-31","Wrong Input")
 
-class Testforfiledate(unittest.TestCase):
-    def runTest(self):
-        self.assertEqual(energy_per_day("20221231"),None,"Wrong Input")
-        self.assertEqual(energy_per_day("20201231"),"GOOD","Wrong Input")
+# class Testforfiledate(unittest.TestCase):
+#     def runTest(self):
+#         self.assertEqual(energy_per_day("20221231"),None,"Wrong Input")
+#         self.assertEqual(energy_per_day("20201231"),"GOOD","Wrong Input")
 
 unittest.main()
 
