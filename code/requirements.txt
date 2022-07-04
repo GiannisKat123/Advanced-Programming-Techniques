@@ -1,0 +1,11 @@
+sklearn
+tensorflow
+matplotlib
+pandas
+numpy
+seaborn
+plotly
+keras
+regex
+os
+math

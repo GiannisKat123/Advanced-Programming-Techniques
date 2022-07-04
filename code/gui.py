@@ -9,7 +9,6 @@ from functions import *
 from tkinter import *
 from tkinter import filedialog
 from tkinter.ttk import Combobox
-import matplotlib.pyplot as plt
 from numpy import size
 from tkcalendar import *
 import os
