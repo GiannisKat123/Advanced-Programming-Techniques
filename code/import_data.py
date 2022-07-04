@@ -6,7 +6,7 @@ import numpy as np
 
 
 directory=os.getcwd()
-
+os.chdir(directory)
 def insertfiles(filename):
     print(filename)
     filename = filename + ".csv"
@@ -18,17 +18,17 @@ def insertfiles(filename):
     sources_headers = ["Time","Solar","Wind","Geothermal","Biomass","Biogas","Small hydro","Coal","Nuclear","Natural gas","Large hydro","Batteries","Imports","Other"]
     demands_headers = ["Time","Day ahead forecast","Hour ahead forecast","Current demand"]
 
-
+    mypath="{}/processed_sources".format(directory)
+    os.chdir(mypath)
+    files = [f for f in listdir(mypath) if isfile(join(mypath, f))]
 
     mypath1="{}/new_data/sources".format(directory)
     os.chdir(mypath1)
     sourcesfiles = [f for f in listdir(mypath1) if isfile(join(mypath1, f))]
-    print(sourcesfiles)
     mypath2="{}/new_data/demands".format(directory)
     os.chdir(mypath2)
     demandsfiles = [f for f in listdir(mypath2) if isfile(join(mypath2, f))]
-    print(demandsfiles)
-    if (filename in sourcesfiles) and (filename in demandsfiles):
+    if (filename in sourcesfiles) and (filename in demandsfiles) and ("new_"+filename not in files):
         print("GOOD")
         os.chdir(mypath1)
         df1 = pd.read_csv(filename)
@@ -38,7 +38,7 @@ def insertfiles(filename):
         if len(df1)>150 and len(df2)>150:
             print("GOOD GOOD")
 
-            os.chdir("{}/code".format(directory))
+            os.chdir("{}".format(directory))
             df = pd.read_csv("merged_source_files.csv")
             
             filelist=[]
@@ -104,11 +104,11 @@ def insertfiles(filename):
             df3.insert(2, 'Year', years) #adds year column
 
             df_sources_new = pd.concat([df,df3])
-            os.chdir("{}/code".format(directory))
+            os.chdir("{}".format(directory))
             df_sources_new.to_csv("merged_source_files.csv", index=False)
 
 
-            os.chdir("{}/code".format(directory))
+            os.chdir("{}".format(directory))
             df = pd.read_csv("merged_demand_files.csv")
 
             filelist=[]
@@ -151,8 +151,8 @@ def insertfiles(filename):
             df3.insert(2, 'Year', years) #adds year column
 
             df_demands_new = pd.concat([df,df3])
-            os.chdir("{}/code".format(directory))
-            df_demands_new.to_csv("new_merged_demand_files.csv", index=False)
+            os.chdir("{}".format(directory))
+            df_demands_new.to_csv("merged_demand_files.csv", index=False)
 
             #Merge of files of sources and demands
             cols = ['Day ahead forecast', 'Hour ahead forecast', 'Current demand']
